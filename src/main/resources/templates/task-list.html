@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Список задач</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Ваши задачи</h2>
+    <form th:action="@{/tasks}" method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="keyword" class="form-control" placeholder="Поиск задач" th:value="${keyword}">
+            <button type="submit" class="btn btn-primary">Поиск</button>
+        </div>
+    </form>
+    <form th:action="@{/tasks/filter}" method="get" class="mb-3">
+        <div class="input-group">
+            <select name="categoryId" class="form-select">
+                <option value="">Все категории</option>
+                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+            <button type="submit" class="btn btn-secondary">Фильтровать</button>
+        </div>
+    </form>
+    <a th:href="@{/tasks/add}" class="btn btn-success mb-3">Добавить новую задачу</a>
+    <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center" th:each="task : ${tasks}">
+            <div>
+                <h5 th:text="${task.title}"></h5>
+                <p th:text="${task.description}"></p>
+                <small th:text="'Дата выполнения: ' + ${task.dueDate}"></small><br>
+                <span th:text="'Категория: ' + ${task.category?.name}" class="text-muted"></span>
+            </div>
+            <div>
+                <a th:href="@{'/tasks/' + ${task.id} + '/edit'}" class="btn btn-warning btn-sm">Редактировать</a>
+                <form th:action="@{'/tasks/' + ${task.id} + '/delete'}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Удалить задачу?')">Удалить</button>
+                </form>
+            </div>
+        </li>
+    </ul>
+    <nav class="mt-4">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${page.hasPrevious()} ? '' : 'disabled'">
+                <a th:href="@{'/tasks?page=' + ${page.number - 1}}" class="page-link">Назад</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${page.number == i} ? 'active'">
+                <a th:href="@{'/tasks?page=' + ${i}}" class="page-link" th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${page.hasNext()} ? '' : 'disabled'">
+                <a th:href="@{'/tasks?page=' + ${page.number + 1}}" class="page-link">Вперед</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
+
+
+
